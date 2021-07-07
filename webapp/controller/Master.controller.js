@@ -16,11 +16,31 @@ sap.ui.define([
 		onInit: function () {
 			// debugger;
 			this.getOwnerComponent().setModel(new JSONModel({
-				busy: true,
+				busy: false,
+				plant: "1031",
+				VendorId: "0000200323",
+				showAdvancedSearch: false
 			}), "listViewModel");
 			this.oRouter = this.getOwnerComponent().getRouter();
 			this._bDescendingSort = false;
-			this._getUserDetails();
+			if (!sap.ushell) {} else {
+				if (sap.ui.getCore().plants != undefined) {
+					if (sap.ui.getCore().plants.hasOwnProperty("plant")) {
+						if (sap.ui.getCore().plants.plant) {
+							this.getOwnerComponent().getModel("listViewModel").setProperty("/plant", sap.ui.getCore().plants.plant);
+							this._getMasterListData();
+						}
+					}
+					sap.ui.getCore().plants.registerListener(function (val) {
+						if (val) {
+							this.getOwnerComponent().getModel("listViewModel").setProperty("/plant", val);
+							this._getMasterListData();
+						}
+					}.bind(this));
+				}
+			}
+			// this._getUserDetails();
+			// this._getMasterListData();
 		},
 
 		onListItemPress: function (oEvent) {
@@ -106,6 +126,27 @@ sap.ui.define([
 			} else {
 				this._applyFilter([]);
 			}
+		},
+		onChangeCompany: function (oEvent) {
+			debugger;
+			this.getOwnerComponent().getModel("listViewModel").setProperty("/VendorId", oEvent.getSource().getSelectedItem().getKey());
+		},
+		onChangeVoucher: function (oEvent) {
+			this.getOwnerComponent().getModel("listViewModel").setProperty("/voucher", oEvent.getSource().getValue());
+		},
+		onAdvancedSearchPress: function () {
+			if (!this._oDialog) {
+				this._oDialog = sap.ui.xmlfragment("com.minda.PaymentAdvice.fragments.AdvancedSearch", this);
+				this.getView().addDependent(this._oDialog);
+			}
+			this._oDialog.open();
+		},
+		onPressCloseDialog: function () {
+			this._oDialog.close();
+		},
+		onPressApply: function () {
+			this._oDialog.close();
+			this._getMasterListData();
 		}
 
 	});

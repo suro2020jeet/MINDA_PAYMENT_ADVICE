@@ -1,0 +1,29 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+	<Dialog contentHeight="30%" contentWidth="35%" verticalScrolling="false">
+		<customHeader>
+			<Bar>
+				<contentMiddle>
+					<Title text="Advanced Search"/>
+				</contentMiddle>
+			</Bar>
+		</customHeader>
+		<content>
+			<l:VerticalLayout class="sapUiResponsiveContentPadding " width="100%">
+				<VBox width="100%">
+					<Label design="Bold" text="Company:"/>
+					<ComboBox width="100%" placeholder="Select Company" items="{ path: 'companyModel>/companies', sorter: { path: 'id' } }" change="onChangeCompany">
+						<core:Item key="{companyModel>id}" text="{companyModel>name} ({companyModel>id})"/>
+					</ComboBox>
+				</VBox>
+				<VBox width="100%">
+					<Label design="Bold" text="Voucher No:"/>
+					<Input value="" placeholder="Enter Voucher No..."/>
+				</VBox>
+			</l:VerticalLayout>
+		</content>
+		<buttons>
+			<Button text="Apply" press="onPressApply" type="Emphasized"/>
+			<Button text="Cancel" press="onPressCloseDialog" type="Reject"/>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

@@ -19,7 +19,7 @@ sap.ui.define([
 						this.getOwnerComponent().getModel("listViewModel").setProperty("/masterViewTitle", "Vouchers (" + oData.results.length +
 							")");
 						this.getOwnerComponent().setModel(new JSONModel(oData), "voucherModel");
-						his.getOwnerComponent().getModel("voucherModel").setSizeLimit(10000);
+						this.getOwnerComponent().getModel("voucherModel").setSizeLimit(10000);
 
 					}.bind(this),
 					error: function (oError) {
@@ -86,7 +86,53 @@ sap.ui.define([
 				async: false,
 				success: function (data, textStatus, jqXHR) {
 					var role = data.result.roles[0].name;
-					this._getVendorName(role, user);
+					if (role === "Admin" || role == "Purchase") {
+						this.getOwnerComponent().getModel("listViewModel").setProperty("/showAdvancedSearch", true);
+						this._getPlantsForUser(user);
+						this._getCompaniessForUser(user);
+						this.getOwnerComponent().getRouter().navTo("404");
+					} else {
+						this.getOwnerComponent().getModel("listViewModel").setProperty("/showAdvancedSearch", false);
+						this._getVendorName(role, user);
+					}
+				}.bind(this),
+				error: function (data) {
+					// console.log("error", data);
+				}
+			});
+		},
+		_getPlantsForUser: function (user) {
+			jQuery.ajax({
+				type: "GET",
+				contentType: "application/x-www-form-urlencoded",
+				headers: {
+					"Authorization": "Basic NDMyYjNjZjMtNGE1OS0zOWRiLWEwMWMtYzM5YzhjNGYyNTNkOjk2NTJmOTM0LTkwMmEtMzE1MS05OWNiLWVjZTE1MmJkZGQ1NA=="
+				},
+				url: "/token/accounts/c70391893/users/groups/plants?userId=" + user,
+				dataType: "json",
+				async: false,
+				success: function (data, textStatus, jqXHR) {
+					this.plants = data.plants;
+					this.getOwnerComponent().setModel(new JSONModel(data), "plantModel");
+				}.bind(this),
+				error: function (data) {
+					// console.log("error", data);
+				}
+			});
+		},
+		_getCompaniessForUser: function (user) {
+			jQuery.ajax({
+				type: "GET",
+				contentType: "application/x-www-form-urlencoded",
+				headers: {
+					"Authorization": "Basic NDMyYjNjZjMtNGE1OS0zOWRiLWEwMWMtYzM5YzhjNGYyNTNkOjk2NTJmOTM0LTkwMmEtMzE1MS05OWNiLWVjZTE1MmJkZGQ1NA=="
+				},
+				url: "/token/accounts/c70391893/user/companies?userId=" + user,
+				dataType: "json",
+				async: false,
+				success: function (data, textStatus, jqXHR) {
+					this.plants = data.plants;
+					this.getOwnerComponent().setModel(new JSONModel(data), "companyModel");
 				}.bind(this),
 				error: function (data) {
 					// console.log("error", data);
@@ -105,6 +151,7 @@ sap.ui.define([
 					var user = data.name,
 						name = data.firstName;
 					user = "Delhi@shankarmoulding.com";
+					// user = "akmalhotra@mindagroup.com";
 					this._getCurrentUserRole(user);
 				}.bind(this)
 			});

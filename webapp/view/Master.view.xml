@@ -11,6 +11,9 @@
 			</OverflowToolbar>
 		</subHeader>
 		<content>
+				<HBox height="3rem" justifyContent="End" visible="{listViewModel>/showAdvancedSearch}" alignItems="Center">
+				<Link text="Advanced Search" press="onAdvancedSearchPress"/>
+			</HBox>
 			<Table sticky="HeaderToolbar" mode="SingleSelectMaster" id="table" items="{ path: 'voucherModel>/results'}"
 				updateFinished="onUpdateFinished" itemPress="onListItemPress" growing="true" growingThreshold="18" growingScrollToLoad="true">
 				<columns>
